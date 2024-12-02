@@ -2,32 +2,34 @@ def is_safe(report, can_skip_one = False):
     if len(report) < 2:
         return True
     
-    def is_monotonic(subreport):
-        previous = subreport[0]
-        increasing = subreport[1] >= previous
-        for current in subreport[1:]:
-            diff = abs(current - previous)
-            if diff < 1 or diff > 3:
+    previous = report[0]
+    increasing = report[1] >= previous
+    
+    for current in report[1:]:
+        diff = abs(current - previous)
+        if diff < 1 or diff > 3:
+            if can_skip_one:
+                can_skip_one = False
+                continue
+            else:
                 return False
 
-            if increasing and current < previous:
+        if increasing and current < previous:
+            if can_skip_one:
+                can_skip_one = False
+                continue
+            else:
                 return False
-            if not increasing and current > previous:
+        if not increasing and current > previous:
+            if can_skip_one:
+                can_skip_one = False
+                continue
+            else:
                 return False
-            
-            previous = current
-
-        return True
-    
-    if is_monotonic(report):
-        return True
-    
-    if can_skip_one:
-        for i in range(len(report)):
-            if is_monotonic(report[:i] + report[i+1:]):
-                return True
         
-    return False
+        previous = current
+
+    return True
 
 
 safe = 0
